@@ -1,3 +1,8 @@
 .hide{
     display: none;
 }
+
+.timer {
+    right: 10px;
+    text-align: right;
+}

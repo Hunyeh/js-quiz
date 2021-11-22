@@ -73,6 +73,10 @@ var hideH2 = document.querySelector("#hide")
 var myScore = document.querySelector(".myScore")
 var goBackBtn = document.querySelector("#btn2")
 var clearBtn = document.querySelector("#btn3")
+var highScoreNav = document.querySelector("#highScoreNav")
+var resetInitials = document.querySelector("#inputEl")
+var resultsID = document.querySelector("#resultsID")
+
 
 // timer begins
 function countdown() {
@@ -108,7 +112,6 @@ function startQuiz() {
 // once the quiz is over, the time left is captured
 function endGame() {
     clearInterval(setIntervalId)
-    console.log("game over")
     initialsEl.classList.remove("hide")
     scoresEl.classList.remove("hide")
     buttonTwo.classList.add("hide")
@@ -116,60 +119,74 @@ function endGame() {
     finalScore.textContent = timeRemaining
 }
 
+function finalScores() {
+    window.localStorage.getItem("high scores")
+    JSON.parse(window.localStorage.getItem("high scores"))
+    var highScoreArray = JSON.parse(window.localStorage.getItem("high scores"))
+    resultsID.innerHTML = ""
+    for (var i = 0; i < highScoreArray.length; i++) {
+        var li1 = document.createElement("li")
+        li1.textContent = highScoreArray[i]
+        resultsID.appendChild(li1)
+    }
+}
 
-
-
-document.addEventListener("click", function (event) {
+// form element
+submitBtn.addEventListener("click", function (event) {
     event.preventDefault()
     event.stopPropagation()
-    console.log("this works")
-    if (event.target.matches("#submitBtn")) {
-        var initials = document.querySelector("#initials").value
-        var highScoreItem = `${timeRemaining} ${initials}`
-        var highScores1 = (window.localStorage.getItem("high scores"))
-        if (highScores1 === null) {
-            highScores = []
-        } else {
-            highScores = JSON.parse(highScores1)
-        }
-        highScores.push(highScoreItem)
-        localStorage.setItem("high scores", JSON.stringify(highScores))
-        
-        var listEl = document.getElementById("resultsID")
-        for (var i = 0; i < highScores.length; i++) {
-            var li1 = document.createElement("li")
-            li1.textContent = highScores[i]
-            listEl.appendChild(li1)
-        }
-    }
-});
-
-submitBtn.addEventListener("click", function (event) {
     buttonTwo.classList.remove("hide")
     initialsEl.classList.add("hide")
     alertEl.classList.add("hide")
     hideH2.classList.remove("hide")
-    localStorage.getItem("high scores")
-})
+    var initials = document.querySelector("#inputEl").value
+    var highScoreItem = `${timeRemaining} ${initials}`
+    var highScores1 = (window.localStorage.getItem("high scores"))
+    if (highScores1 === null) {
+        highScores = []
+    } else {
+        highScores = JSON.parse(highScores1)
+    }
+    highScores.push(highScoreItem)
+    localStorage.setItem("high scores", JSON.stringify(highScores))
 
+    finalScores();
+
+    resetInitials.value = ""
+});
+
+// go back button
 goBackBtn.addEventListener("click", function (event) {
     introEl.classList.remove("hide")
     scoresEl.classList.add("hide")
     myScore.classList.add("hide")
     document.getElementById("resultsID").textContent = ""
     if (timeRemaining === 0) {
-        clearInterval(setIntervalId)
+        clearInterval(timeEl)
     } else {
         timeEl.textContent = timeRemaining--
     }
     countdown()
 })
 
-clearBtn.addEventListener("click", function(event) {
+// clear high scores button
+clearBtn.addEventListener("click", function (event) {
     localStorage.clear()
 })
 
+// high score navbar
+highScoreNav.addEventListener("click", function (event) {
+    event.preventDefault()
+    introEl.classList.add("hide")
+    scoresEl.classList.remove("hide")
+    myScore.classList.remove("hide")
+    hideH2.classList.remove("hide")
+    window.localStorage.getItem("high scores")
+    finalScores();
+})
 
+
+// clicking on answer
 document.addEventListener("click", function (event) {
     if (event.target.matches(".answers")) {
         if (event.target.textContent === quizQuestions[questionIndex].correctAnswer) {
@@ -190,12 +207,13 @@ buttonEl.addEventListener("click", function (event) {
     questionsEl.classList.remove("hide")
     introEl.classList.add("hide")
     questionIndex = -1
+    timeRemaining = quizQuestions.length * 15
     startQuiz()
     setIntervalId = setInterval(countdown, 1000)
 })
 
 
-
+var names = ["hi", "bye"]
 
 
 
